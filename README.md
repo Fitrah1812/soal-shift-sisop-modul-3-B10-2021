@@ -6,4 +6,5 @@ Nama Kelompok :
 2. Yusrill Zubaydi 05111940000160
 3. Lathifa Itqonina M 05111940000176
 
+
 1. Kendala pada saat pengerjaan nomor 1 adalah dengan waktu yang terbatas diminta untuk melakukan beberapa komponen yang membuat agak kesulitan karena diminta melakukan beberapa fitur dan kendala lainnya pada syntax yang selalu segmentation fault.
