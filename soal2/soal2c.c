@@ -1,6 +1,5 @@
 
 // This program is an example of how to run a command such as
-// ps aux | grep root | grep sbin
 // ps aux | sort -nrk 3,3 | head -5
 // using C and Unix.
 
