@@ -13,6 +13,8 @@ pthread_t tid[1000000];
 pid_t child;
 char cwd[1000];
 char folder[1000];
+char deepfolder[1000];
+char deepfolder2[1000];
 int err;
 
 void *move(void *arg) {
@@ -39,7 +41,16 @@ void *move(void *arg) {
 	strcat(folderpath, "/");
 	strcat(folderpath, ext);
 	mkdir(folderpath, S_IRWXU);
-	if(strlen(folder) > 1) {
+	if(strlen(deepfolder2)>1){
+		char fullname[1000];
+		strcpy(fullname, deepfolder2);
+		strcat(fullname, "/");
+		strcat(fullname, filename);
+		strcat(folderpath, "/");
+        strcat(folderpath, filename);
+        rename(fullname, folderpath);
+	}
+	else if(strlen(folder) > 1) {
 		char fullname[1000];
 		strcpy(fullname, folder);
 		strcat(fullname, "/");
@@ -66,6 +77,32 @@ void minf(int argc, char *argv[]){
     return;
 }
 
+void deep(){
+	DIR *dir;
+	struct dirent *tmp;
+	int i=0;
+	memset(deepfolder2, '\0', sizeof(deepfolder2));
+	strcpy(deepfolder2,deepfolder);
+	printf("%s\n", deepfolder2);
+	dir = opendir(deepfolder2);
+	while((dir!=NULL) && (tmp=readdir(dir))) {
+		if(tmp->d_type==DT_DIR && strcmp(tmp->d_name, ".")!=0 && strcmp(tmp->d_name, "..")!=0){
+			strcat(deepfolder2,tmp->d_name);
+			strcat(deepfolder2,"/");
+			deep();
+		}
+        if(strcmp(tmp->d_name, ".")==0 || strcmp(tmp->d_name, "..")==0 || strcmp(tmp->d_name, "soal3.c")==0 || strcmp(tmp->d_name, "soal3")==0 || tmp->d_type==DT_DIR) 
+		continue;
+        err = pthread_create(&tid[i], NULL, move, tmp->d_name);
+        if(err != 0) printf("Yah, gagal disimpan :(\n");
+        else printf("Direktori sukses disimpan!\n");
+        i++;
+    }
+    for(int j=0; j<i; j++) pthread_join(tid[j], NULL);
+    closedir(dir);
+    return;
+}
+
 void other(int argc, char *argv[]){
     DIR *dir;
 	struct dirent *tmp;
@@ -76,12 +113,20 @@ void other(int argc, char *argv[]){
 	}
 	else if((argv[1][0]=='*') && (strlen(argv[1])==1)) {
 		dir = opendir(cwd);
+		strcpy(folder, cwd);
 	}
 	else {
 		printf("Butuh Argumen -f atau -d atau \\*\n");
         return;
 	}
 	while((dir!=NULL) && (tmp=readdir(dir))) {
+		if(tmp->d_type==DT_DIR && strcmp(tmp->d_name, ".")!=0 && strcmp(tmp->d_name, "..")!=0){
+			strcpy(deepfolder,folder);
+			strcat(deepfolder,"/");
+			strcat(deepfolder,tmp->d_name);
+			strcat(deepfolder,"/");
+			deep();
+		}
         if(strcmp(tmp->d_name, ".")==0 || strcmp(tmp->d_name, "..")==0 || strcmp(tmp->d_name, "soal3.c")==0 || strcmp(tmp->d_name, "soal3")==0 || tmp->d_type==DT_DIR) 
 		continue;
         err = pthread_create(&tid[i], NULL, move, tmp->d_name);
@@ -97,6 +142,8 @@ void other(int argc, char *argv[]){
 int main(int argc, char *argv[]) {
 	getcwd(cwd, sizeof(cwd));
 	memset(folder, '\0', sizeof(folder));
+	memset(deepfolder, '\0', sizeof(deepfolder));
+	memset(deepfolder2, '\0', sizeof(deepfolder2));
 	if(argc < 2) {
 		printf("Butuh Argumen -f atau -d atau \\*\n");
 		return 0;
