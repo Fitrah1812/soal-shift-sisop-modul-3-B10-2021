@@ -258,10 +258,11 @@ int main(int argc, char const *argv[])
                 for (int i=0 ; i<maxi; i++)
                 {
                     sitasi rd = savede[i];
-                    char* cekes = strrchr(buff2,'.');
-                    char* oker = strrchr(ceke,'/');
                     char ceke[maxi];
                     char buff2[maxi];
+                    char* cekes = strrchr(buff2,'.');
+                    char* oker = strrchr(ceke,'/');
+                    
                     
                     strcpy(ceke,rd.path);
                     if (savede[i].tahun == 0){
