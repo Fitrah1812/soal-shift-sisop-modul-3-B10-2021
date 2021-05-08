@@ -137,9 +137,9 @@ int main(int argc, char const *argv[])
                     const char s[2] = ":";
                     char *per;
                     per = strtok(buffer, s);
-                    char uname[maxi];
+                    char apa[maxi];
                     char cobacek[maxi];
-                    strcpy(uname,per);
+                    strcpy(apa,per);
                     strcpy(cobacek,"");
                     //char inbuf[MSGSIZE]; 
                     int p[2], i; 
@@ -166,7 +166,7 @@ int main(int argc, char const *argv[])
                         if (strlen(cobacek) == 0)
                             strcpy(cobacek,per);
                     }
-                    if (strcmp(uname,login.id)==0)
+                    if (strcmp(apa,login.id)==0)
                     {
                         flag = 1;
                         printf("%s\n",cobacek);
@@ -234,16 +234,41 @@ int main(int argc, char const *argv[])
                 int flag = 0;
                 FILE* f;
                 f = fopen("akun.txt","a+");
-                
+                // pthread_t thread1, thread2;//inisialisasi awal
+                // const char *message1 = "Thread 1";
+                // const char *message2 = "Thread 2";
+                // int  iret1, iret2;
+
+                // iret1 = pthread_create( &thread1, NULL, print_message_function, (void*) message1); //membuat thread pertama
+                // if(iret1) //jika eror
+                // {
+                //     fprintf(stderr,"Error - pthread_create() return code: %d\n",iret1);
+                //     exit(EXIT_FAILURE);
+                // }
+
+                // iret2 = pthread_create( &thread2, NULL, print_message_function, (void*) message2);//membuat thread kedua
+                // if(iret2)//jika gagal
+                // {
+                //     fprintf(stderr,"Error - pthread_create() return code: %d\n",iret2);
+                //     exit(EXIT_FAILURE);
+                // }
+
+                // // printf("pthread_create() for thread 1 returns: %d\n",iret1);
+                // // printf("pthread_create() for thread 2 returns: %d\n",iret2);
+
+                // pthread_join( thread1, NULL);
+                // pthread_join( thread2, NULL); 
+
+                exit(EXIT_SUCCESS);
                 while (fscanf(f,"%s",buffer) != EOF)
                 {
                     printf("%s\n",buffer);
                     const char s[2] = ":";
                     char *per;
                     per = strtok(buffer, s);
-                    char uname[maxi];
+                    char apa[maxi];
                     char cobacek[maxi];
-                    strcpy(uname,per);
+                    strcpy(apa,per);
                     while(per != NULL ) 
                     {
                         printf( " %s\n", per );
@@ -251,7 +276,7 @@ int main(int argc, char const *argv[])
                         if (strlen(cobacek) == 0)
                             strcpy(cobacek,per);
                     }
-                    if (strcmp(uname,login.id) == 0)
+                    if (strcmp(apa,login.id) == 0)
                     {
                         flag = 1;
                         break;
@@ -295,8 +320,8 @@ int main(int argc, char const *argv[])
                 }
                 else
                 {
-                    char *message;
-                    message = (char *) ptr;
+                    // char *message;
+                    // message = (char *) ptr;
                     //printf("%s \n", message);
 
                     for(int i=0;i<10;i++){
