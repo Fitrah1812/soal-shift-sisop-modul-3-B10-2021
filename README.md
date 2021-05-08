@@ -11,4 +11,4 @@ Nama Kelompok :
 
 Kendala :
 
-Kendala pada saat pengerjaan nomor 1 adalah dengan waktu yang terbatas diminta untuk melakukan beberapa komponen yang membuat agak kesulitan karena diminta melakukan beberapa fitur dan kendala lainnya pada syntax yang selalu segmentation fault. Beberapa hal sudah saya lakukan dengan pembuatan thread sebagaiakses untuk menyelesaikannya tetapi ada beberapa hal yang membuat socket tidak terhubung dengan sempurna dan menyebabkan beberap hal error.
+Kendala pada saat pengerjaan nomor 1 adalah dengan waktu yang terbatas diminta untuk melakukan beberapa komponen yang membuat agak kesulitan karena diminta melakukan beberapa fitur dan kendala lainnya pada syntax yang selalu segmentation fault. Beberapa hal sudah saya lakukan dengan pembuatan thread sebagai akses untuk menyelesaikannya tetapi ada beberapa hal yang membuat socket tidak terhubung dengan sempurna dan menyebabkan beberap hal error. Sehingga belum menyelesaikannya secara sempurna.
