@@ -122,4 +122,135 @@ Membuat program yang dapat melakukan perkalian matriks 4x3 dengan matriks 3x6. M
 
      shmdt(matriks);
 ```  
-Pada share memory ini saya menggunakan template yang ada pada modul 3 yang telah diberikan dengan beberapa penyesuaian. Tahap yang dilakukan dalam melakukan share memory ini yakni membuat terlebih dahulu key nya. Kemudian pada variable matriks tersebut akan berisi segmen memori bersama yang terkait dengan pengidentifikasi memori bersama (key), shmid, ke ruang alamat proses pemanggilan sesuai dengan fungsi ```shmat```. Terdapat pointer p yang akan menunjuk pada setiap isi dalam array matriks dan dilakukan pengcopyan data dengan menggunakan ```memcpy``` melalui variable pointer p terhadap variable hasil agar variable matriks (memori yang di share) akan berisi hasil dari matriks yang telah dikalikan.
+Pada share memory ini saya menggunakan template yang ada pada modul 3 yang telah diberikan dengan beberapa penyesuaian. Tahap yang dilakukan dalam melakukan share memory ini yakni membuat terlebih dahulu key nya. Kemudian pada variable matriks tersebut akan berisi segmen memori bersama yang terkait dengan pengidentifikasi memori bersama (key), shmid, ke ruang alamat proses pemanggilan sesuai dengan fungsi ```shmat```. Terdapat pointer p yang akan menunjuk pada setiap isi dalam array matriks dan dilakukan pengcopyan data dengan menggunakan ```memcpy``` melalui variable pointer p terhadap variable hasil agar variable matriks (memori yang di share) akan berisi hasil dari matriks yang telah dikalikan.  
+
+**Screenshot Hasil :**  
+![image](https://user-images.githubusercontent.com/55240758/118431274-1ed39d80-b700-11eb-893c-38f255e00796.png)
+  
+**No. 2b**  
+Berdasarkan hasil perkalian matriks pada poin 2a, dilakukan perhitungan dengan matriks baru yang mana telah dijelaskan ketentuaannya pada soal. Dimana pada setiap perhitungan  cel matriks harus menggunakan thread. terlbih dahulu dilakukan pendeklarasian array dua dimensi pada program ini dan saya menggunakan struct dalam program ini untuk mempermudah perolehan data yang saya ingin kan. Program sebagai berikut :  
+```c
+      #include <stdio.h>
+      #include <sys/ipc.h>
+      #include <sys/shm.h>
+      #include <unistd.h>
+      #include <string.h>
+      #include <pthread.h>
+      #include <stdlib.h>
+
+      int matriksInput[4][6];
+      int matriks[4][6];
+      unsigned long long hasilOperasi[4][6];
+
+      typedef struct data {
+        int matriksA;
+        int matriksB;
+        int x,y;
+      }data;
+```  
+Pada fungsi main di bawah ini progam dapat mengakses hasil dari operasi pekalian matriks pada program poin 2a melalui share memory dengan key yang telah ditentukan yaitu 1234, dimana nilai tersebut disimpan dalam variable hasil. Kemudian terdapat variable hasil yang akan mencopy data dari variable hasil dengan ```memcpy```  untuk proses operasi yang akan dilakukan selanjutnya. Terdapat fungsi input yang tepisah dari fungsi main, sehingga dilakukan pemanggilan terhadap fungsi tersebut untuk melakukan penginputan. Selanjutnya dilakukan pembuatan pointer index terhadap struct. Setiap operasi sel pada matriks, thread akan dibuat. Maka proses looping pertama thread akan menjalankan **fungsi operation** sebagai routine dengan atribut index sebagai variabel yang digunakan. Thread tersebut dibuat dengan ```pthread_create(&tid[i][j], NULL, &perkalianmatrix, NULL)``` dan berjalan dengan tid i j yang di increment setiap perulangannya. Kemudian dilakukan join terhadap setiap thread yang sudah dibuat dengan ```pthread_join(tid[a], NULL)```. Agar thread berjalan dengan teratur (berurutan) digunakan ```sleep(1)``` dengan begitu antar thread terdapat jeda waktu 1 detik. Setelah fungsi operasi selesai dilakukan penampilan data hasil perolehan operasi. Dan untuk mengakhiri share memory yang sedang berlangsung digunakan ```shmctl```.
+```c
+      void main(){
+        key_t key = 1234;
+        int i=4,j=6;
+        int (*hasil)[j];
+        int shmid = shmget(key, sizeof(int)*i*j, IPC_CREAT | 0666);
+        hasil = shmat(shmid, NULL, 0);
+
+        int* p = (int *)hasil;
+        memcpy(matriks,hasil,sizeof(int)*i*j);
+
+        pthread_t tid[i][j];
+        inputMatrix();
+
+        for(int i= 0;i<4;i++)
+        {
+              for(int j=0;j<6;j++){
+                data *index = (data *)malloc(sizeof(data));
+                index->matriksA = matriks[i][j];
+                index->matriksB = matriksInput[i][j];
+                index->x = i;
+                index->y = j;
+                // printf("matriks A : %d",index->matriksA);
+                // printf("matriks B : %d",index->matriksB);
+                // printf("baris : %d",index->x);
+                // printf("kolom : %d",index->y);
+                pthread_create(&tid[i][j],NULL, &operation, (void*)index);
+                sleep(1);
+              }
+
+        }
+        for (int i = 0; i < 4; i++) {
+          for (int j = 0; j < 6; j++) {
+            pthread_join(tid[i][j], NULL);
+          }
+        }
+
+        printf("\nHasil Operasi Matrix : \n");
+        for(int b=0; b<i; b++){
+          for(int c=0; c<j ; c++){
+            printf("%llu\t", hasilOperasi[b][c]);
+          }
+          printf("\n");
+        }
+        printf("\n");
+        shmdt(hasil);
+        shmctl(shmid, IPC_RMID, NULL);
+      }
+```  
+Ada pung fungsi terkait sebaik berikut :    
+***Fungsi Input***
+```c
+        void inputMatrix(){
+            printf("Input matriks 4x6 :\n");
+          for (int i = 0; i < 4; i++) {
+              for (int j = 0; j < 6; j++) {
+                  scanf("%d", & matriksInput[i][j]);
+              }
+            }
+        }
+```
+  
+***Fungsi Operation***  
+Pada fungsi ini struct digunakan untuk memudahkan dalam pencarian kondisi sesuai dengan perintah soal melalui statement if else.
+```c
+      void *operation(void* arg){
+        data* d = (data*) arg;
+        int a = d->matriksA;
+        //printf("a :%d\n",a);
+        int b = d->matriksB;
+        //printf("b :%d\n",b);
+        int x = d->x;
+        //printf("x :%d\n",x);
+        int y = d->y;
+        //printf("y :%d\n",y);
+
+        if(a==0 || b==0){
+          hasilOperasi[x][y] = 0;
+          //printf("hasil if 3: %llu\n",hasilOperasi[x][y]);
+        }
+        else if (a>=b){
+          int temp = a-b;
+          hasilOperasi[x][y] = factorial(a)/factorial(temp);
+          //printf("hasil if 1: %llu\n",hasilOperasi[x][y]);
+        }
+        else if(b>a){
+          hasilOperasi[x][y] = factorial(a);
+          //printf("hasil if 2: %llu\n",hasilOperasi[x][y]);
+        }
+      }
+```
+
+***Fungsi Factorial***  
+```c
+      unsigned long long factorial(int n) 
+      { 
+        if(n==0)return 1;
+        else
+          return n*factorial(n-1);
+      }
+```
+**Screenshot Hasil :**    
+![image](https://user-images.githubusercontent.com/55240758/118435283-e2f10600-b708-11eb-81ae-14a312ea3953.png)
+
+  
