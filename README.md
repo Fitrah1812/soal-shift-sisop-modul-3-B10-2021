@@ -124,7 +124,7 @@ Membuat program yang dapat melakukan perkalian matriks 4x3 dengan matriks 3x6. M
 ```  
 Pada share memory ini saya menggunakan template yang ada pada modul 3 yang telah diberikan dengan beberapa penyesuaian. Tahap yang dilakukan dalam melakukan share memory ini yakni membuat terlebih dahulu key nya. Kemudian pada variable matriks tersebut akan berisi segmen memori bersama yang terkait dengan pengidentifikasi memori bersama (key), shmid, ke ruang alamat proses pemanggilan sesuai dengan fungsi ```shmat```. Terdapat pointer p yang akan menunjuk pada setiap isi dalam array matriks dan dilakukan pengcopyan data dengan menggunakan ```memcpy``` melalui variable pointer p terhadap variable hasil agar variable matriks (memori yang di share) akan berisi hasil dari matriks yang telah dikalikan.  
 
-**Screenshot Hasil :**  
+**Screenshot Output:**  
 ![image](https://user-images.githubusercontent.com/55240758/118431274-1ed39d80-b700-11eb-893c-38f255e00796.png)
   
 **No. 2b**  
@@ -250,7 +250,117 @@ Pada fungsi ini struct digunakan untuk memudahkan dalam pencarian kondisi sesuai
           return n*factorial(n-1);
       }
 ```
-**Screenshot Hasil :**    
+**Screenshot Output :**    
 ![image](https://user-images.githubusercontent.com/55240758/118435283-e2f10600-b708-11eb-81ae-14a312ea3953.png)
-
   
+**No. 2c**    
+Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan resource komputernya dengan command ```ps aux | sort -nrk 3,3 | head -5```. Dimana command tersebut harus dijalankan melalui IPC Pipes
+Program sebagai berikut :
+```c
+      #include <stdlib.h>
+      #include <stdio.h>
+      #include <unistd.h>
+      #include <errno.h>
+
+      int pid;
+      int pipe1[2];
+      int pipe2[2];
+
+      void exec1() {
+        // input from stdin (already done)
+        // output to pipe1
+        dup2(pipe1[1], 1);
+        // close fds
+        close(pipe1[0]);
+        close(pipe1[1]);
+        // exec
+        execlp("ps", "ps", "aux", NULL);
+        // exec didn't work, exit
+        perror("bad exec ps");
+        _exit(1);
+      }
+
+      void exec2() {
+        // input from pipe1
+        dup2(pipe1[0], 0);
+        // output to pipe2
+        dup2(pipe2[1], 1);
+        // close fds
+        close(pipe1[0]);
+        close(pipe1[1]);
+        close(pipe2[0]);
+        close(pipe2[1]);
+        // exec
+        execlp("sort", "sort", "-nrk", "3.3", NULL);
+        // exec didn't work, exit
+        perror("bad exec grep root");
+        _exit(1);
+      }
+
+      void exec3() {
+        // input from pipe2
+        dup2(pipe2[0], 0);
+        // output to stdout (already done)
+        // close fds
+        close(pipe2[0]);
+        close(pipe2[1]);
+        // exec
+        execlp("head", "head", "-5", NULL);
+        // exec didn't work, exit
+        perror("bad exec grep sbin");
+        _exit(1);
+      }
+
+      void main() {
+
+        // create pipe1
+        if (pipe(pipe1) == -1) {
+          perror("bad pipe1");
+          exit(1);
+        }
+
+        // fork (ps aux)
+        if ((pid = fork()) == -1) {
+          perror("bad fork1");
+          exit(1);
+        } else if (pid == 0) {
+          // stdin --> ps --> pipe1
+          exec1();
+        }
+        // parent
+
+        // create pipe2
+        if (pipe(pipe2) == -1) {
+          perror("bad pipe2");
+          exit(1);
+        }
+
+        // fork (grep root)
+        if ((pid = fork()) == -1) {
+          perror("bad fork2");
+          exit(1);
+        } else if (pid == 0) {
+          // pipe1 --> grep --> pipe2
+          exec2();
+        }
+        // parent
+
+        // close unused fds
+        close(pipe1[0]);
+        close(pipe1[1]);
+
+        // fork (grep sbin)
+        if ((pid = fork()) == -1) {
+          perror("bad fork3");
+          exit(1);
+        } else if (pid == 0) {
+          // pipe2 --> grep --> stdout
+          exec3();
+        }
+        // parent
+      }
+```  
+Berdasarkan program tersebut setiap command dibagi menjadi beberapa fungsi yaitu ***fungsi exec1*** yang berisi command ```ps aux```, ***fungsi exec2*** yang berisi command  ``` sort -nrk 3,3```, dan ***fungsi exec3*** yang berisi command ``` head -5 ```. Yang mana pada setiap fungsi main tersebut dilakukan pembuatan pipe sekaligus pemanggilan setiap fungsi exec yang apabila gagal maka akan dilakukan exit dan menampilkan pesan errornya. Pemanggilan setiap fungsi tersebut dengan menerapkan pembuatan fork yang apabila ``` if(pid == 0)``` terpenuhi, maka fungsi exec akan berjalan. Sehingga dapat disimpulkan bahwa setiap fungsi yang dipanggil merupakan child. Dapat diketahui pula command ```ps aux ``` digunakan untuk menampilkan semua proses yang sedang berjalan, ```sort -nrk 3,3 ``` untuk melakukan sorting berdasarkan ***memory usage*** nya, dan ```head -5``` agar proses yang ditampilkan merupakan proses 5 teraratas.
+  
+***Screenshot Output : ***  
+![image](https://user-images.githubusercontent.com/55240758/118438222-2f8b1000-b70e-11eb-881f-d1caa635e447.png)
