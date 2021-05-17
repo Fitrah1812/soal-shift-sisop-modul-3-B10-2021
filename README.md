@@ -254,8 +254,7 @@ Pada fungsi ini struct digunakan untuk memudahkan dalam pencarian kondisi sesuai
 ![image](https://user-images.githubusercontent.com/55240758/118435283-e2f10600-b708-11eb-81ae-14a312ea3953.png)
   
 **No. 2c**    
-Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan resource komputernya dengan command ```ps aux | sort -nrk 3,3 | head -5```. Dimana command tersebut harus dijalankan melalui IPC Pipes
-Program sebagai berikut :
+Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan resource komputernya dengan command ```ps aux | sort -nrk 3,3 | head -5```. Dimana command tersebut harus dijalankan melalui IPC Pipes. Program sebagai berikut :  
 ```c
       #include <stdlib.h>
       #include <stdio.h>
