@@ -363,3 +363,109 @@ Berdasarkan program tersebut setiap command dibagi menjadi beberapa fungsi yaitu
   
 **Screenshot Output :**  
 ![image](https://user-images.githubusercontent.com/55240758/118438222-2f8b1000-b70e-11eb-881f-d1caa635e447.png)
+
+# Soal No 3
+Seorang mahasiswa bernama Alex sedang mengalami masa gabut. Di saat masa gabutnya, ia memikirkan untuk merapikan sejumlah file yang ada di laptopnya. Karena jumlah filenya terlalu banyak, Alex meminta saran ke Ayub. Ayub menyarankan untuk membuat sebuah program C agar file-file dapat dikategorikan. Program ini akan memindahkan file sesuai ekstensinya ke dalam folder sesuai ekstensinya yang folder hasilnya terdapat di working directory ketika program kategori tersebut dijalankan.
+
+Diminta terdapat 3 opsi yang bisa dilakukan, yaitu :
+1. -f untuk mengkategorikan file yang diminta melalui argumen dari program yang dijalankan
+2. -d untuk mengaktegorikan file yang ada di suatu directory tertentu ke folder program yg dijalankan
+3. \* untuk mengkategorikan file yang ada di direktory saat ini
+
+Untuk argumen -f, hanya perlu membua thread untuk tiap file yang ingin dikategorikan dan melakuka thread join agar bisa berjalan bersamaan. untuk kodenya seperti dibawah ini
+```c
+for(int i=2; i<argc; i++) {
+		err = pthread_create(&tid[i], NULL, move, (void *)argv[i]);
+		if(err != 0) printf("File %d : Sad, gagal :(\n", i-1);
+        else printf("File %d : Berhasil Dikategorikan\n", i-1);
+}
+for(int j=2; j<argc; j++) pthread_join(tid[j], NULL);
+```
+
+Untuk argumen -d dan \* sebenarnya sama, hanya berbeda pada direktory yang dibuka. Untuk -d, direktory yang dibuka adalah direktory yang ada di argomen
+```c
+if(strcmp(argv[1], "-d") == 0) {
+    dir = opendir(argv[2]);
+		strcpy(folder, argv[2]);
+}
+```
+Untuk \*, direktory yang dibuka adalah direktory saat ini
+```c
+else if((argv[1][0]=='*') && (strlen(argv[1])==1)) {
+		dir = opendir(cwd);
+		strcpy(folder, cwd);
+}
+```
+Lalu, untuk setiap file yang ada di direktory tersebut akan diperiksa satu per satu, apakah mereka file atau bukan, jika mereka bukan file maka akan di ignore, sementara jika mereka adalah file, maka akan dibuat thread baru untuk mengkategorikan file tersebut dan akan thread join agar bisa berjalan secara bersamaan
+```c
+while((dir!=NULL) && (tmp=readdir(dir))) {
+		if(tmp->d_type==DT_DIR && strcmp(tmp->d_name, ".")!=0 && strcmp(tmp->d_name, "..")!=0){
+			strcpy(deepfolder,folder);
+			strcat(deepfolder,"/");
+			strcat(deepfolder,tmp->d_name);
+			strcat(deepfolder,"/");
+			deep();
+		}
+        if(strcmp(tmp->d_name, ".")==0 || strcmp(tmp->d_name, "..")==0 || strcmp(tmp->d_name, "soal3.c")==0 || strcmp(tmp->d_name, "soal3")==0 || tmp->d_type==DT_DIR) 
+		continue;
+        err = pthread_create(&tid[i], NULL, move, tmp->d_name);
+        if(err != 0) printf("Yah, gagal disimpan :(\n");
+        else printf("Direktori sukses disimpan!\n");
+        i++;
+    }
+    for(int j=0; j<i; j++) pthread_join(tid[j], NULL);
+    closedir(dir);
+}
+```
+Untuk memindahkan file tersebut dan menkategorikannya, maka akan diambil ekstensi dari file tersebut dengan mengambilnya dari nama lengkap file tersebut menggunakan ```strchr``` dengan pemisah ".", jika ekstension file tidak ada, maka dia akan disimpan ke folder Unknown. Selanjutnya kita perlu membuat folder dengan nama ekstension dari file tersebut dan memindahkan file tersebut ke folder yang sudah dibuat. Di sini saya tidak memindah, melainkan merename filenya agar terpindah.
+```c
+void *move(void *arg) {
+	char *filepath = (char *)arg;
+	char *extension = NULL;
+	extension = strchr(filepath, '.');
+	char ext[1000];
+	memset(ext, '\0', sizeof(ext));
+	if((extension-filepath-strlen(cwd)+1)==2 || (extension-filepath+1)==1) strcpy(ext, "Hidden");
+	else if(extension) {
+		extension++;
+        for(int i=0; i<strlen(extension); i++) {
+               	ext[i] = tolower(extension[i]);
+    	}
+	}
+	else strcpy(ext, "Unknown");
+    char *filename = NULL;
+    filename = strrchr(filepath, '/');
+    if(filename) filename++;
+	else filename = filepath;
+
+	char folderpath[1000];
+	strcpy(folderpath, cwd);
+	strcat(folderpath, "/");
+	strcat(folderpath, ext);
+	mkdir(folderpath, S_IRWXU);
+	if(strlen(deepfolder2)>1){
+		char fullname[1000];
+		strcpy(fullname, deepfolder2);
+		strcat(fullname, "/");
+		strcat(fullname, filename);
+		strcat(folderpath, "/");
+        strcat(folderpath, filename);
+        rename(fullname, folderpath);
+	}
+	else if(strlen(folder) > 1) {
+		char fullname[1000];
+		strcpy(fullname, folder);
+		strcat(fullname, "/");
+		strcat(fullname, filename);
+		strcat(folderpath, "/");
+        strcat(folderpath, filename);
+        rename(fullname, folderpath);
+	}
+	else {					
+	    strcat(folderpath, "/");
+        strcat(folderpath, filename);
+		rename(filepath, folderpath);
+	}
+	return NULL;
+}
+````
