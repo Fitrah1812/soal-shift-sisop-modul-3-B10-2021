@@ -23,9 +23,21 @@ id2:password2
 
 Jawaban : Pada saat penggunaan yang menginginkan multi-connections maka kita membutuhkan thread sebagai alat untuk melakukan aktifitas tersebut. Oleh karena itu disini saya membuat dua buah thread untuk mengakomodasi hal tersebut untuk menyimpan username dan password. 
 
+Hasilnya adalah sebagai berikut :
+
+![image1A](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1A.jpeg)
+
+![image1AA](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1AA.jpeg)
+
 B. Sistem memiliki sebuah database yang bernama files.tsv. Isi dari files.tsv ini adalah path file saat berada di server, publisher, dan tahun publikasi. Setiap penambahan dan penghapusan file pada folder file yang bernama  FILES pada server akan memengaruhi isi dari files.tsv. Folder FILES otomatis dibuat saat server dijalankan. 
 
-Jawaban :
+Jawaban : Setiap memasukkan sesuatu akan dideteksi dan akan dimasukkan ke database 
+
+Hasilnya adalah sebagai berikut :
+
+
+![image1B](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1B.jpeg)
+
 
 C. Tidak hanya itu, Keverk juga diminta membuat fitur agar client dapat menambah file baru ke dalam server. Direktori FILES memiliki struktur direktori di bawah ini : 
 
@@ -56,6 +68,11 @@ Kemudian, dari aplikasi client akan dimasukan data buku tersebut (perlu diingat 
 
 Jawaban : 
 
+Hasilnya adalah sebagai berikut :
+
+![image1C](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1C.jpeg)
+
+
 D. Dan client dapat mendownload file yang telah ada dalam folder FILES di server, sehingga sistem harus dapat mengirim file ke client. Server harus melihat dari files.tsv untuk melakukan pengecekan apakah file tersebut valid. Jika tidak valid, maka mengirimkan pesan error balik ke client. Jika berhasil, file akan dikirim dan akan diterima ke client di folder client tersebut. 
 
 Contoh Command client
@@ -64,6 +81,12 @@ download TEMPfile.pdf
 
 Jawaban :
 
+Hasilnya adalah sebagai berikut :
+
+![image1DA](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1DA.jpeg)
+
+![image1DB](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1DB.jpeg)
+
 E. Setelah itu, client juga dapat menghapus file yang tersimpan di server. Akan tetapi, Keverk takut file yang dibuang adalah file yang penting, maka file hanya akan diganti namanya menjadi ‘old-NamaFile.ekstensi’. Ketika file telah diubah namanya, maka row dari file tersebut di file.tsv akan terhapus.
 
 Contoh Command Client:
@@ -71,6 +94,10 @@ Contoh Command Client:
 delete TEMPfile.pdf
 
 Jawaban :
+
+Hasilnya adalah sebagai berikut :
+
+![image1E](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1E.jpeg)
 
 F. Client dapat melihat semua isi files.tsv dengan memanggil suatu perintah yang bernama see. Output dari perintah tersebut keluar dengan format. 
 
@@ -103,6 +130,10 @@ Filepath :
 
 Jawaban :
 
+Hasilnya adalah sebagai berikut :
+
+![image1F](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1F.jpeg)
+
 G. Aplikasi client juga dapat melakukan pencarian dengan memberikan suatu string. Hasilnya adalah semua nama file yang mengandung string tersebut. Format output seperti format output f.
 
 Contoh Client Command:
@@ -110,6 +141,10 @@ Contoh Client Command:
 find TEMP
 
 Jawaban :
+
+Hasilnya adalah sebagai berikut :
+
+![image1G](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1G.jpeg)
 
 H. Dikarenakan Keverk waspada dengan pertambahan dan penghapusan file di server, maka Keverk membuat suatu log untuk server yang bernama running.log. Contoh isi dari log ini adalah
 
@@ -121,6 +156,9 @@ Hapus : File2.ektensi (id:pass)
 
 Jawaban :
 
+Hasilnya adalah sebagai berikut :
+
+![image1H](https://github.com/Fitrah1812/soal-shift-sisop-modul-3-B10-2021/blob/main/Dokumentasi/Nomor1H.jpeg)
 
 Kendala :
 
