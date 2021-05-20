@@ -15,8 +15,11 @@ Di dalam proyek itu, Keverk diminta:
 A. Pada saat client tersambung dengan server, terdapat dua pilihan pertama, yaitu register dan login. Jika memilih register, client akan diminta input id dan passwordnya untuk dikirimkan ke server. User juga dapat melakukan login. Login berhasil jika id dan password yang dikirim dari aplikasi client sesuai dengan list akun yang ada didalam aplikasi server. Sistem ini juga dapat menerima multi-connections. Koneksi terhitung ketika aplikasi client tersambung dengan server. Jika terdapat 2 koneksi atau lebih maka harus menunggu sampai client pertama keluar untuk bisa melakukan login dan mengakses aplikasinya. Keverk menginginkan lokasi penyimpanan id dan password pada file bernama akun.txt dengan format :
 
 akun.txt
+
 id:password
+
 id2:password2
+
 
 Jawaban : Pada saat penggunaan yang menginginkan multi-connections maka kita membutuhkan thread sebagai alat untuk melakukan aktifitas tersebut. Oleh karena itu disini saya membuat dua buah thread untuk mengakomodasi hal tersebut untuk menyimpan username dan password. 
 
@@ -27,20 +30,26 @@ Jawaban :
 C. Tidak hanya itu, Keverk juga diminta membuat fitur agar client dapat menambah file baru ke dalam server. Direktori FILES memiliki struktur direktori di bawah ini : 
 
 Direktori FILES 
+
 File1.ekstensi
+
 File2.ekstensi
 
 
+
 Pertama client mengirimkan input ke server dengan struktur sebagai berikut :
-		Contoh Command Client :
+Contoh Command Client :
 		
 add
 		
-		Output Client Console:
+Output Client Console:
 		
 Publisher:
+
 Tahun Publikasi:
+
 Filepath:
+
 
 
 Kemudian, dari aplikasi client akan dimasukan data buku tersebut (perlu diingat bahwa Filepath ini merupakan path file yang akan dikirim ke server). Lalu client nanti akan melakukan pengiriman file ke aplikasi server dengan menggunakan socket. Ketika file diterima di server, maka row dari files.tsv akan bertambah sesuai dengan data terbaru yang ditambahkan
@@ -50,6 +59,7 @@ Jawaban :
 D. Dan client dapat mendownload file yang telah ada dalam folder FILES di server, sehingga sistem harus dapat mengirim file ke client. Server harus melihat dari files.tsv untuk melakukan pengecekan apakah file tersebut valid. Jika tidak valid, maka mengirimkan pesan error balik ke client. Jika berhasil, file akan dikirim dan akan diterima ke client di folder client tersebut. 
 
 Contoh Command client
+
 download TEMPfile.pdf
 
 Jawaban :
@@ -70,16 +80,25 @@ see
 
 
 Contoh Format Output pada Client:
+
 Nama:
+
 Publisher:
+
 Tahun publishing:
-Ekstensi File : 
+
+Ekstensi File :
+
 Filepath : 
 
 Nama:
+
 Publisher:
+
 Tahun publishing:
+
 Ekstensi File : 
+
 Filepath : 
 
 Jawaban :
@@ -95,7 +114,9 @@ Jawaban :
 H. Dikarenakan Keverk waspada dengan pertambahan dan penghapusan file di server, maka Keverk membuat suatu log untuk server yang bernama running.log. Contoh isi dari log ini adalah
 
 running.log
+
 Tambah : File1.ektensi (id:pass)
+
 Hapus : File2.ektensi (id:pass)
 
 Jawaban :
