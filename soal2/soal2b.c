@@ -61,8 +61,8 @@ void inputMatrix(){
 
 void main(){
 	key_t key = 1234;
-    int i=4,j=6;
-    int (*hasil)[j];
+    	int i=4,j=6;
+   	int (*hasil)[j];
 	int shmid = shmget(key, sizeof(int)*i*j, IPC_CREAT | 0666);
 	hasil = shmat(shmid, NULL, 0);
 
@@ -70,7 +70,7 @@ void main(){
 	memcpy(matriks,hasil,sizeof(int)*i*j);
 
 	pthread_t tid[i][j];
-    inputMatrix();
+    	inputMatrix();
 
 	for(int i= 0;i<4;i++)
 	{
@@ -85,7 +85,7 @@ void main(){
 			// printf("baris : %d",index->x);
 			// printf("kolom : %d",index->y);
 			pthread_create(&tid[i][j],NULL, &operation, (void*)index);
-			sleep(1);
+			//sleep(1);
         }
 		
 	}
