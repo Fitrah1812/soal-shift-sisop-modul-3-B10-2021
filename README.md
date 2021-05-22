@@ -550,7 +550,7 @@ Berdasarkan hasil perkalian matriks pada poin 2a, dilakukan perhitungan dengan m
         int x,y;
       }data;
 ```  
-Pada fungsi main di bawah ini progam dapat mengakses hasil dari operasi pekalian matriks pada program poin 2a melalui share memory dengan key yang telah ditentukan yaitu 1234, dimana nilai tersebut disimpan dalam variable hasil. Kemudian terdapat variable hasil yang akan mencopy data dari variable hasil dengan ```memcpy```  untuk proses operasi yang akan dilakukan selanjutnya. Terdapat fungsi input yang tepisah dari fungsi main, sehingga dilakukan pemanggilan terhadap fungsi tersebut untuk melakukan penginputan. Selanjutnya dilakukan pembuatan pointer index terhadap struct. Setiap operasi sel pada matriks, thread akan dibuat. Maka proses looping pertama thread akan menjalankan **fungsi operation** sebagai routine dengan atribut index sebagai variabel yang digunakan. Thread tersebut dibuat dengan ```pthread_create(&tid[i][j], NULL, &perkalianmatrix, NULL)``` dan berjalan dengan tid i j yang di increment setiap perulangannya. Kemudian dilakukan join terhadap setiap thread yang sudah dibuat dengan ```pthread_join(tid[a], NULL)```. Agar thread berjalan dengan teratur (berurutan) digunakan ```sleep(1)``` dengan begitu antar thread terdapat jeda waktu 1 detik. Setelah fungsi operasi selesai dilakukan penampilan data hasil perolehan operasi. Dan untuk mengakhiri share memory yang sedang berlangsung digunakan ```shmctl```.
+Pada fungsi main di bawah ini progam dapat mengakses hasil dari operasi pekalian matriks pada program poin 2a melalui share memory dengan key yang telah ditentukan yaitu 1234, dimana nilai tersebut disimpan dalam variable hasil. Kemudian terdapat variable hasil yang akan mencopy data dari variable hasil dengan ```memcpy```  untuk proses operasi yang akan dilakukan selanjutnya. Terdapat fungsi input yang tepisah dari fungsi main, sehingga dilakukan pemanggilan terhadap fungsi tersebut untuk melakukan penginputan. Selanjutnya dilakukan pembuatan pointer index terhadap struct. Setiap operasi sel pada matriks, thread akan dibuat. Maka proses looping pertama thread akan menjalankan **fungsi operation** sebagai routine dengan atribut index sebagai variabel yang digunakan. Thread tersebut dibuat dengan ```pthread_create(&tid[i][j], NULL, &perkalianmatrix, NULL)``` dan berjalan dengan tid i j yang di increment setiap perulangannya. Kemudian dilakukan join terhadap setiap thread yang sudah dibuat dengan ```pthread_join(tid[a], NULL)```. Setelah fungsi operasi selesai dilakukan penampilan data hasil perolehan operasi. Dan untuk mengakhiri share memory yang sedang berlangsung digunakan ```shmctl```.
 ```c
       void main(){
         key_t key = 1234;
@@ -578,7 +578,7 @@ Pada fungsi main di bawah ini progam dapat mengakses hasil dari operasi pekalian
                 // printf("baris : %d",index->x);
                 // printf("kolom : %d",index->y);
                 pthread_create(&tid[i][j],NULL, &operation, (void*)index);
-                sleep(1);
+                //sleep(1);
               }
 
         }
