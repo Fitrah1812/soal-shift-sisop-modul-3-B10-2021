@@ -761,7 +761,42 @@ Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan reso
         // parent
       }
 ```  
-Berdasarkan program tersebut setiap command dibagi menjadi beberapa fungsi yaitu ***fungsi exec1*** yang berisi command ```ps aux```, ***fungsi exec2*** yang berisi command  ``` sort -nrk 3,3```, dan ***fungsi exec3*** yang berisi command ``` head -5 ```. Yang mana pada setiap fungsi main tersebut dilakukan pembuatan pipe sekaligus pemanggilan setiap fungsi exec yang apabila gagal maka akan dilakukan exit dan menampilkan pesan errornya. Pemanggilan setiap fungsi tersebut dengan menerapkan pembuatan fork yang apabila ``` if(pid == 0)``` terpenuhi, maka fungsi exec akan berjalan. Sehingga dapat disimpulkan bahwa setiap fungsi yang dipanggil merupakan child. Dapat diketahui pula command ```ps aux ``` digunakan untuk menampilkan semua proses yang sedang berjalan, command ```sort -nrk 3,3 ``` untuk melakukan sorting berdasarkan ***memory usage*** nya, dan command ```head -5``` agar proses yang ditampilkan merupakan proses 5 teraratas.
+Berdasarkan program tersebut setiap command dibagi menjadi beberapa fungsi yaitu ***fungsi exec1*** yang berisi command ```ps aux```, ***fungsi exec2*** yang berisi command  ``` sort -nrk 3,3```, dan ***fungsi exec3*** yang berisi command ``` head -5 ```. Yang mana pada setiap fungsi main tersebut dilakukan pembuatan pipe sekaligus pemanggilan setiap fungsi exec yang apabila gagal maka akan dilakukan exit dan menampilkan pesan errornya. Pemanggilan setiap fungsi tersebut dengan menerapkan pembuatan fork yang apabila ``` if(pid == 0)``` terpenuhi, maka fungsi exec akan berjalan dan apabila gagal akan exit dan akan mengeluarkan pesan error pula. Sehingga dapat disimpulkan bahwa setiap fungsi yang dipanggil merupakan child. Dapat diketahui pula command ```ps aux ``` digunakan untuk menampilkan semua proses yang sedang berjalan, command ```sort -nrk 3,3 ``` untuk melakukan sorting berdasarkan ***memory usage*** nya, dan command ```head -5``` agar proses yang ditampilkan merupakan proses 5 teratas. Dan adapun pada setiap fungsi exec (1/2/3) terdapat pemanggilan fungsi dup2. Perlu diketahui bahwa sistem memiliki 3 id file default (atau variabel yang menunjukkan output atau sumber input) yang berkaitan dengan input dan output. Diantaranya yaitu stdin, stdout, stderr, yang dinyatakan dalam bilang bulat secara berurutan yaitu 0, 1, 2. Lalu fungsi dup2 digunakan untuk  menduplikasikan *file descriptor* pada pipe. Dalam fungsi dup2 tersebut terdapat dua parameter yaitu array bernama pipe1 atau pipe2 dan standard output yaitu angka 0 atau 1.  
+  
+**fungsi exec1()**   
+langkahnya sebagai berikut :  
+**1. dup2(pipe1[1], 1)**  
+Penjelasan : apabila standard output digunakan (bernilai 1) menunjukkan bahwa dia merupakan stdout. Maka pipe1[1] (pipe indeks 1) akan diarahkan ke stdout sehingga pipe1 merupakan stdout.   
+**2. close(pipe1[0]) dan close(pipe1[1])**    
+Penjelasan : pipe1 indeks 0 dan 1 ditutup   
+**3. execlp("ps", "ps", "aux", NULL)**  
+Penjelasan : menjalankan command ``ps aux`` 
+Sehingga pipe1 pada ***fungsi exec1()*** akan mejalankan command dan menuliskan output command kedalam pipe1  
+  
+**fungsi exec2()**   
+langkahnya sebagai berikut :  
+**1. dup2(pipe1[0], 0)**  
+Penjelasan : apabila standard output digunakan (bernilai 0) menunjukkan bahwa dia merupakan stdin. Maka pipe1[1] (pipe indeks 1) akan diarahkan ke stdin sehingga pipe1 merupakan stdin.   
+**2. dup2(pipe2[1], 1)**    
+Penjelasan : apabila standard output digunakan (bernilai 1) menunjukkan bahwa dia merupakan stdout. Maka pipe2[1] (pipe indeks 1) akan diarahkan ke stdout sehingga pipe2 merupakan stdout. 
+**3. close(pipe1[0]), dan close(pipe1[1])**  
+Penjelasan : pipe1 indeks 0 dan 1 ditutup     
+**4. close(close(pipe2[0]), dan close(pipe2[1])**    
+Penjelasan : pipe2 indeks 0 dan 1 ditutup   
+**5. execlp("sort", "sort", "-nrk", "3.3", NULL)**  
+Penjelasan : menjalankan command *sort -nrk 3.3*  
+Sehingga pipe1 pada ***fungsi exec2()*** akan mejalankan command dan menuliskan output kedalam pipe2
+    
+**fungsi exec3()**   
+langkahnya sebagai berikut :  
+**1. dup2(pipe2[0], 0)**  
+Penjelasan : apabila standard output digunakan (bernilai 0) menunjukkan bahwa dia merupakan stdin. Maka pipe1[1] (pipe indeks 1) akan diarahkan ke stdin sehingga pipe1 merupakan stdin.    
+**2. close(pipe1[0]) dan close(pipe1[1])**    
+Penjelasan : pipe1 indeks 0 dan 1 ditutup     
+**3. execlp("head", "head", "-5", NULL)**    
+Penjelasan : menjalankan command ``head -5``   
+Sehingga pipe1 pada ***fungsi exec3()*** akan mejalankan command dan menuliskan output pada stdout
+
   
 **Screenshot Output :**  
 ![image](https://user-images.githubusercontent.com/55240758/118438222-2f8b1000-b70e-11eb-881f-d1caa635e447.png)
