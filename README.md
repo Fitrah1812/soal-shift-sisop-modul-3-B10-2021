@@ -669,13 +669,19 @@ Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan reso
 
       void exec1() {
         // input from stdin (already done)
-        // output to pipe1
+	
+        // output to pipe1 // duplicate write ke  pipe1
         dup2(pipe1[1], 1);
-        // close fds
+  	
+	// close pipe1 // menutup read pipe1
         close(pipe1[0]);
+	
+	// menutup write pipe1
         close(pipe1[1]);
-        // exec
+	
+        // exec // eksekusi command
         execlp("ps", "ps", "aux", NULL);
+	
         // exec didn't work, exit
         perror("bad exec ps");
         _exit(1);
@@ -683,16 +689,24 @@ Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan reso
 
       void exec2() {
         // input from pipe1
+	
+	// duplicate read ke pipe1
         dup2(pipe1[0], 0);
-        // output to pipe2
+	
+        // output to pipe2 // duplicate write ke pipe2
         dup2(pipe2[1], 1);
-        // close fds
-        close(pipe1[0]);
+	
+	// close read dan write pada pipe1 
+	close(pipe1[0]); 
         close(pipe1[1]);
+	
+        // close read and write pada pipe2
         close(pipe2[0]);
         close(pipe2[1]);
-        // exec
+	
+        // exec //eksekusi command
         execlp("sort", "sort", "-nrk", "3.3", NULL);
+	
         // exec didn't work, exit
         perror("bad exec grep root");
         _exit(1);
@@ -700,13 +714,17 @@ Pada poin ini diminta untuk mengecek 5 proses teratas apa saja yang memakan reso
 
       void exec3() {
         // input from pipe2
+	// duplicate read ke pipe2
         dup2(pipe2[0], 0);
+	
         // output to stdout (already done)
-        // close fds
+        // close read dan write pipe2
         close(pipe2[0]);
         close(pipe2[1]);
+	
         // exec
         execlp("head", "head", "-5", NULL);
+	
         // exec didn't work, exit
         perror("bad exec grep sbin");
         _exit(1);
